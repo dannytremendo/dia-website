@@ -237,8 +237,8 @@
     <div class="card login">
       <p style="margin-top:0">Die Website liest und schreibt direkt im privaten GitHub-Repository des Alerts. Dafür braucht sie einen persönlichen Zugriffsschlüssel. Er bleibt in Ihrem Browser.</p>
       <form id="loginForm">
-        <label class="f" for="inRepo">Repository (Besitzer/Name)</label>
-        <input type="text" id="inRepo" placeholder="organisation/defense-innovation-alert" required>
+        <label class="f" for="inRepo">Privates Repository des Alerts (Besitzer/Name)</label>
+        <input type="text" id="inRepo" placeholder="benutzername/cihbw" required>
         <label class="f" for="inToken">GitHub-Zugriffsschlüssel (Fine-grained token)</label>
         <input type="password" id="inToken" placeholder="github_pat_…" autocomplete="off" required>
         <div class="hint">Nur für dieses Repository. Rechte: Contents (lesen und schreiben), Actions (lesen und schreiben), Metadata (lesen).</div>
@@ -340,6 +340,10 @@ async function loadAll() {
     gh(`/contents/${PATHS.docs}?ref=${S.branch}`).catch(() => []),
     lastRun(WF.digest), lastRun(WF.watchlist),
   ]);
+  if (!wl.text) {
+    const e = new Error(`In „${S.repo}“ liegt kein Alert (config/watchlist.yaml fehlt). Bitte das private Repository des Alerts eintragen, nicht das der Website.`);
+    e.status = 412; throw e;
+  }
   S.recipients = rec.text ? (JSON.parse(rec.text).empfaenger || []) : [];
   S.recSha = rec.sha;
   S.watchlist = wl.text && window.jsyaml ? jsyaml.load(wl.text) : null;
@@ -613,7 +617,7 @@ async function init() {
   if (DEMO) { $("demoBar").hidden = false; await loadAll(); setConnected(true); show((location.hash || "#overview").slice(1)); return; }
   // Repository-Vorschlag aus der GitHub-Pages-Adresse ableiten
   const m = location.hostname.match(/^([\w-]+)\.github\.io$/);
-  if (m) $("inRepo").value = `${m[1]}/${location.pathname.split("/").filter(Boolean)[0] || ""}`;
+  if (m && !$("inRepo").value) $("inRepo").value = `${m[1]}/`;  // nur den Besitzer vorschlagen: die Website liegt in einem anderen Repository als der Alert
   let saved = null; try { saved = JSON.parse(storage()?.getItem("dia.auth") || "null"); } catch {}
   if (!saved) { setConnected(false); show("settings"); return; }
   Object.assign(S, saved); $("inRepo").value = S.repo;
