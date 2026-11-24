@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Defense Innovation Updates · CIHBw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,300..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js" defer></script>
+<style>
+  /* Hausschrift Garaje 0506: Datei optional unter site/fonts/ ablegen, sonst Mona Sans schmal */
+  @font-face { font-family: "Garaje 0506"; src: local("Garaje 0506 Book"), local("Garaje 0506"), url("fonts/Garaje0506-Book.woff2") format("woff2"); font-display: swap; }
+  :root {
+    --black:#000; --white:#fff; --g:#00FF66; --g2:#75FFAD; --g3:#BDFFD8; --grey:#707076; --grey2:#B5B5B7;
+    --bg:#F3F3F4; --line:#DCDCDE;
+    --head:"Garaje 0506","Mona Sans","Arial Narrow",Arial,sans-serif;
+    --body:"Mona Sans",Arial,Helvetica,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--black); font-family:var(--body); font-size:15px; line-height:1.5; }
+  a { color:inherit; }
+  button,input { font:inherit; }
+  :focus-visible { outline:3px solid var(--g); outline-offset:2px; }
+  .h { font-family:var(--head); font-stretch:75%; font-weight:800; text-transform:uppercase; letter-spacing:.01em; line-height:1.05; }
+
+  header.top { background:var(--black); color:var(--white); }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 28px; }
+  .top .wrap { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding-top:30px; padding-bottom:22px; flex-wrap:wrap; }
+  .kicker { color:var(--g2); font-size:12px; letter-spacing:.22em; text-transform:uppercase; }
+  .top h1 { margin:8px 0 0; font-size:46px; }
+  .top .sub { color:var(--grey2); font-size:14px; margin-top:8px; }
+  .repo-pill { display:inline-flex; align-items:center; gap:8px; border:1px solid #333; padding:6px 12px; font-size:13px; color:var(--grey2); background:#0d0d0d; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--grey); display:inline-block; }
+  .dot.on { background:var(--g); box-shadow:0 0 0 3px rgba(0,255,102,.2); }
+  .stripe { height:6px; background:var(--g); }
+
+  nav.tabs { background:var(--white); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+  nav.tabs .wrap { display:flex; gap:4px; overflow-x:auto; }
+  nav.tabs button { background:none; border:0; padding:16px 14px 12px; cursor:pointer; font-family:var(--head); font-stretch:75%; font-weight:700; text-transform:uppercase; font-size:15px; letter-spacing:.03em; color:var(--grey); border-bottom:4px solid transparent; white-space:nowrap; }
+  nav.tabs button[aria-selected="true"] { color:var(--black); border-bottom-color:var(--g); }
+  nav.tabs button:hover { color:var(--black); }
+
+  main { padding:32px 0 80px; }
+  section.view { display:none; }
+  section.view.active { display:block; }
+  .sec-head { display:flex; align-items:center; gap:12px; margin:0 0 18px; }
+  .sec-no { background:var(--g); font-family:var(--head); font-weight:800; font-size:15px; padding:4px 9px; }
+  .sec-head h2 { margin:0; font-size:26px; }
+  .lead { color:var(--grey); margin:-8px 0 22px; max-width:760px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns:repeat(4,1fr); }
+  .two { grid-template-columns:1.4fr 1fr; align-items:start; }
+  @media (max-width:860px) { .kpis { grid-template-columns:repeat(2,1fr); } .two { grid-template-columns:1fr; } .top h1 { font-size:34px; } }
+  .card { background:var(--white); border:1px solid var(--line); padding:20px 22px; }
+  .card h3 { margin:0 0 12px; font-size:18px; }
+  .kpi .num { font-family:var(--head); font-stretch:75%; font-weight:800; font-size:44px; line-height:1; }
+  .kpi .lbl { color:var(--grey); font-size:13px; margin-top:6px; }
+  .kpi { border-top:4px solid var(--black); }
+  .kpi.accent { border-top-color:var(--g); }
+
+  .btn { display:inline-flex; align-items:center; gap:8px; border:2px solid var(--black); background:var(--black); color:var(--white); padding:10px 16px; cursor:pointer; font-weight:600; font-size:14px; text-decoration:none; }
+  .btn:hover:not(:disabled) { background:var(--g); color:var(--black); border-color:var(--g); }
+  .btn.ghost { background:transparent; color:var(--black); }
+  .btn.ghost:hover:not(:disabled) { background:var(--black); color:var(--white); border-color:var(--black); }
+  .btn.small { padding:5px 10px; font-size:13px; }
+  .btn.danger:hover:not(:disabled) { background:#000; color:#fff; border-color:#000; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+  .status { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line); }
+  .status:last-child { border-bottom:0; }
+  .status .t { font-weight:600; }
+  .status .m { color:var(--grey); font-size:13px; }
+  .badge { display:inline-block; font-size:12px; padding:1px 7px; background:var(--g3); color:var(--black); font-weight:600; white-space:nowrap; }
+  .badge.grey { background:#E6E6E8; color:var(--grey); }
+  .badge.black { background:var(--black); color:var(--g); }
+
+  .news { display:grid; gap:12px; }
+  .item { background:var(--white); border:1px solid var(--line); border-left:5px solid var(--g); padding:14px 18px; }
+  .item.rival { border-left-color:var(--grey); }
+  .item .meta { font-size:12px; color:var(--grey); display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .item .meta b { color:var(--black); }
+  .item h4 { margin:4px 0 4px; font-size:17px; line-height:1.3; }
+  .item h4 a { text-decoration:none; }
+  .item h4 a:hover { text-decoration:underline; text-decoration-color:var(--g); text-decoration-thickness:3px; }
+  .item p { margin:2px 0; font-size:14px; }
+  .item .rel { font-size:13px; }
+  .item .src { font-size:12px; color:var(--grey); }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .chip { border:1px solid var(--black); background:var(--white); padding:4px 12px; cursor:pointer; font-size:13px; }
+  .chip[aria-pressed="true"] { background:var(--black); color:var(--g); }
+
+  table.list { width:100%; border-collapse:collapse; background:var(--white); }
+  table.list th { text-align:left; background:var(--black); color:var(--white); font-weight:500; font-size:13px; padding:8px 12px; }
+  table.list td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:middle; font-size:14px; }
+  table.list tr:last-child td { border-bottom:0; }
+  table.list td.act { text-align:right; white-space:nowrap; }
+
+  form.add { display:grid; grid-template-columns:1.3fr 1fr auto; gap:10px; margin-top:16px; }
+  @media (max-width:700px) { form.add { grid-template-columns:1fr; } }
+  input[type=text],input[type=email],input[type=password] { width:100%; border:2px solid var(--black); padding:9px 12px; background:var(--white); }
+  label.f { display:block; font-size:13px; font-weight:600; margin:12px 0 4px; }
+  .hint { font-size:12.5px; color:var(--grey); }
+  .err { color:#B00020; font-size:13px; margin-top:6px; min-height:1em; }
+
+  .drop { display:block; border:2px dashed var(--black); background:var(--white); padding:30px; text-align:center; cursor:pointer; transition:background .15s; }
+  .drop.over { background:var(--g3); border-style:solid; }
+  .drop .big { font-family:var(--head); font-stretch:75%; font-weight:800; text-transform:uppercase; font-size:20px; }
+
+  .prio-group { margin-bottom:22px; }
+  .prio-group table { table-layout:fixed; }
+  .prio-group th:nth-child(2) { width:28%; } .prio-group th:nth-child(3) { width:14%; }
+  .prio-group h3 { display:flex; gap:10px; align-items:center; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .chips span { border:1px solid var(--line); background:var(--white); padding:3px 10px; font-size:13px; }
+  .chips span.rival { background:#E6E6E8; color:var(--grey); }
+
+  .empty { color:var(--grey); padding:18px 0; }
+  .demo-bar { background:var(--g3); padding:8px 0; font-size:13px; }
+  .toast { position:fixed; right:20px; bottom:20px; background:var(--black); color:var(--white); padding:12px 16px; border-left:5px solid var(--g); max-width:380px; font-size:14px; z-index:20; transform:translateY(20px); opacity:0; transition:all .2s; pointer-events:none; }
+  .toast.show { transform:none; opacity:1; }
+  .toast.bad { border-left-color:#ff4d4d; }
+  .spinner { width:14px; height:14px; border:2px solid var(--grey2); border-top-color:var(--black); border-radius:50%; animation:spin .8s linear infinite; display:inline-block; vertical-align:-2px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  footer { color:var(--grey); font-size:12.5px; padding:24px 0 40px; }
+  .login { max-width:560px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="kicker">Cyber Innovation Hub der Bundeswehr · Team I+E</div>
+      <h1 class="h">Defense Innovation Updates</h1>
+      <div class="sub">Wöchentlicher Report zu Defense Innovation Units, Partnerstaaten und Terminen</div>
+    </div>
+    <div class="repo-pill" role="status" aria-live="polite"><span class="dot" id="connDot"></span><span id="connText">nicht verbunden</span></div>
+  </div>
+</header>
+<div class="stripe"></div>
+<div class="demo-bar" id="demoBar" hidden><div class="wrap"><b>Demo-Modus:</b> Beispieldaten, Änderungen werden nicht gespeichert.</div></div>
+
+<nav class="tabs" aria-label="Bereiche"><div class="wrap" role="tablist">
+  <button role="tab" data-view="overview" aria-selected="true">Übersicht</button>
+  <button role="tab" data-view="news" aria-selected="false">News</button>
+  <button role="tab" data-view="recipients" aria-selected="false">Empfänger</button>
+  <button role="tab" data-view="docs" aria-selected="false">Dokumente</button>
+  <button role="tab" data-view="focus" aria-selected="false">Fokus-Partnerschaften</button>
+  <button role="tab" data-view="settings" aria-selected="false">Verbindung</button>
+</div></nav>
+
+<main><div class="wrap">
+
+  <!-- Übersicht -->
+  <section class="view active" id="view-overview">
+    <div class="sec-head"><span class="sec-no">00</span><h2 class="h">Übersicht</h2></div>
+    <div class="grid kpis">
+      <div class="card kpi accent"><div class="num" id="kNews">–</div><div class="lbl">Meldungen im letzten Report</div></div>
+      <div class="card kpi"><div class="num" id="kUnits">–</div><div class="lbl">Units im Fokus</div></div>
+      <div class="card kpi"><div class="num" id="kRecipients">–</div><div class="lbl">Empfänger</div></div>
+      <div class="card kpi"><div class="num" id="kDocs">–</div><div class="lbl">Dokumente als Grundlage</div></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card">
+        <h3 class="h">Termine in den nächsten 8 Wochen</h3>
+        <div id="ovEvents"><div class="empty">Noch keine Daten.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="h">Status</h3>
+        <div id="ovStatus"><div class="empty">Noch keine Daten.</div></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" id="btnSend">Report jetzt senden</button>
+          <button class="btn ghost" id="btnTest">Testlauf ohne Versand</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Automatischer Versand: jeden Montag gegen 06:15 Uhr (Sommerzeit 07:15 Uhr).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News -->
+  <section class="view" id="view-news">
+    <div class="sec-head"><span class="sec-no">01</span><h2 class="h">Die letzten 20 Meldungen</h2></div>
+    <p class="lead">Aus den letzten Reports, neueste zuerst. Jede Meldung verlinkt auf die Originalquelle.</p>
+    <div class="filters" id="newsFilters"></div>
+    <div class="news" id="newsList"><div class="empty">Noch keine Meldungen.</div></div>
+  </section>
+
+  <!-- Empfänger -->
+  <section class="view" id="view-recipients">
+    <div class="sec-head"><span class="sec-no">02</span><h2 class="h">Empfänger</h2></div>
+    <p class="lead">Diese Adressen erhalten den Report jeden Montag. Änderungen gelten ab dem nächsten Versand.</p>
+    <table class="list"><thead><tr><th>E-Mail</th><th>Name</th><th></th></tr></thead><tbody id="recBody"></tbody></table>
+    <form class="add" id="recForm" novalidate>
+      <input type="email" id="recMail" placeholder="name@bundeswehr.org" aria-label="E-Mail-Adresse" required>
+      <input type="text" id="recName" placeholder="Name (optional)" aria-label="Name">
+      <button class="btn" type="submit">Hinzufügen</button>
+    </form>
+    <div class="err" id="recErr"></div>
+  </section>
+
+  <!-- Dokumente -->
+  <section class="view" id="view-docs">
+    <div class="sec-head"><span class="sec-no">03</span><h2 class="h">Dokumente</h2></div>
+    <p class="lead">Aus diesen Dokumenten ergeben sich Units, Staaten und Termine im Fokus. Nach jedem Hochladen oder Löschen erzeugt das System die Watchlist neu (ca. 2–3 Minuten).</p>
+    <div class="grid two">
+      <div>
+        <table class="list"><thead><tr><th>Dokument</th><th>Größe</th><th></th></tr></thead><tbody id="docBody"></tbody></table>
+        <div id="wlStatus" style="margin-top:14px"></div>
+      </div>
+      <div>
+        <label class="drop" id="drop" tabindex="0">
+          <div class="big">Dokument hochladen</div>
+          <div class="hint">PDF, DOCX, MD oder TXT · max. 25 MB<br>Datei hierher ziehen oder klicken</div>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.md,.txt" hidden>
+        </label>
+        <p class="hint" style="margin-top:10px">Eine neue Fassung des Konzeptpapiers: erst hochladen, dann die alte Fassung löschen. Kontaktdaten (E-Mail, Telefon, Kontakt-Blöcke) werden vor der KI-Auswertung entfernt.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fokus -->
+  <section class="view" id="view-focus">
+    <div class="sec-head"><span class="sec-no">04</span><h2 class="h">Fokus-Partnerschaften</h2></div>
+    <p class="lead" id="focusLead">So hat das System die Dokumente ausgewertet. Danach richtet sich die Recherche.</p>
+    <div id="focusUnits"></div>
+    <div class="card" style="margin-top:8px"><h3 class="h">Staaten</h3><div class="chips" id="focusStates"></div>
+      <p class="hint" style="margin-bottom:0">Grau: Systemrivalen, nur Lagebeobachtung.</p></div>
+    <div class="card" style="margin-top:16px"><h3 class="h">Feste Termine aus den Dokumenten</h3><div id="focusEvents"></div></div>
+  </section>
+
+  <!-- Verbindung -->
+  <section class="view" id="view-settings">
+    <div class="sec-head"><span class="sec-no">05</span><h2 class="h">Verbindung</h2></div>
+    <div class="card login">
+      <p style="margin-top:0">Die Website liest und schreibt direkt im privaten GitHub-Repository des Alerts. Dafür braucht sie einen persönlichen Zugriffsschlüssel. Er bleibt in Ihrem Browser.</p>
+      <form id="loginForm">
+        <label class="f" for="inRepo">Repository (Besitzer/Name)</label>
+        <input type="text" id="inRepo" placeholder="organisation/defense-innovation-alert" required>
+        <label class="f" for="inToken">GitHub-Zugriffsschlüssel (Fine-grained token)</label>
+        <input type="password" id="inToken" placeholder="github_pat_…" autocomplete="off" required>
+        <div class="hint">Nur für dieses Repository. Rechte: Contents (lesen und schreiben), Actions (lesen und schreiben), Metadata (lesen).</div>
+        <label class="hint" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="inRemember"> Auf diesem Gerät merken (sonst nur bis zum Schließen des Tabs)</label>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" type="submit">Verbinden</button>
+          <button class="btn ghost" type="button" id="btnLogout">Trennen</button>
+          <a class="btn ghost" href="?demo=1">Demo ansehen</a>
+        </div>
+        <div class="err" id="loginErr"></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>Cyber Innovation Hub der Bundeswehr · Intrapreneurship &amp; Empowerment · Daten: privates GitHub-Repository · Inhalte KI-gestützt recherchiert, Quellen vor Weitergabe prüfen.</footer>
+</div></main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const PATHS = { recipients: "config/empfaenger.json", watchlist: "config/watchlist.yaml", news: "state/news.json", docs: "konzept" };
+const WF = { digest: "weekly-digest.yml", watchlist: "update-watchlist.yml" };
+const DOC_TYPES = ["pdf", "docx", "md", "txt"];
+const MONTHS = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
+const DEMO = new URLSearchParams(location.search).has("demo");
+
+const S = { repo: "", token: "", branch: "main", recipients: [], recSha: null, docs: [], news: null, watchlist: null, runs: {} };
+
+// ------------------------------------------------------------ Hilfen
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return n;
+}
+function deDate(iso, year = true) {
+  if (!iso) return "";
+  const d = new Date(iso.slice(0, 10) + "T12:00:00");
+  return isNaN(d) ? "" : `${d.getDate()}. ${MONTHS[d.getMonth()]}${year ? " " + d.getFullYear() : ""}`;
+}
+function deRange(a, b) {
+  if (!b || b === a) return deDate(a, false);
+  const x = new Date(a + "T12:00:00"), y = new Date(b + "T12:00:00");
+  return x.getMonth() === y.getMonth() ? `${x.getDate()}.–${deDate(b, false)}` : `${deDate(a, false)} – ${deDate(b, false)}`;
+}
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return "gerade eben"; if (m < 60) return `vor ${m} Min.`;
+  const h = Math.round(m / 60); if (h < 24) return `vor ${h} Std.`;
+  return `vor ${Math.round(h / 24)} Tagen`;
+}
+function size(b) { return b > 1e6 ? (b / 1e6).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(b / 1e3)) + " KB"; }
+let toastTimer;
+function toast(msg, bad = false) {
+  const t = $("toast"); t.textContent = msg; t.className = "toast show" + (bad ? " bad" : "");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.className = "toast"), 4200);
+}
+function b64encode(text) { return btoa(String.fromCharCode(...new TextEncoder().encode(text))); }
+function b64decode(b64) { const bin = atob(b64.replace(/\n/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))); }
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// ------------------------------------------------------------ GitHub-API
+async function gh(path, opts = {}) {
+  const r = await fetch(`https://api.github.com/repos/${S.repo}${path}`, {
+    ...opts,
+    headers: { Authorization: `Bearer ${S.token}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(opts.headers || {}) },
+  });
+  if (r.status === 204) return null;
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(data.message || `GitHub-Fehler ${r.status}`); e.status = r.status; throw e; }
+  return data;
+}
+async function getFile(path) {
+  try { const f = await gh(`/contents/${path}?ref=${S.branch}`); return { text: b64decode(f.content || ""), sha: f.sha }; }
+  catch (e) { if (e.status === 404) return { text: null, sha: null }; throw e; }
+}
+const putFile = (path, b64, sha, message) =>
+  gh(`/contents/${encodeURI(path)}`, { method: "PUT", body: JSON.stringify({ message, content: b64, sha: sha || undefined, branch: S.branch }) });
+const deleteFile = (path, sha, message) =>
+  gh(`/contents/${encodeURI(path)}`, { method: "DELETE", body: JSON.stringify({ message, sha, branch: S.branch }) });
+async function lastRun(file) {
+  try { const r = await gh(`/actions/workflows/${file}/runs?per_page=1`); return r.workflow_runs[0] || null; }
+  catch { return null; }
+}
+const dispatch = (file, inputs) => gh(`/actions/workflows/${file}/dispatches`, { method: "POST", body: JSON.stringify({ ref: S.branch, inputs }) });
+
+// ------------------------------------------------------------ Laden
+async function loadAll() {
+  if (DEMO) { Object.assign(S, demoData()); renderAll(); return; }
+  const repo = await gh("");
+  S.branch = repo.default_branch;
+  const [rec, wl, news, docs, r1, r2] = await Promise.all([
+    getFile(PATHS.recipients), getFile(PATHS.watchlist), getFile(PATHS.news),
+    gh(`/contents/${PATHS.docs}?ref=${S.branch}`).catch(() => []),
+    lastRun(WF.digest), lastRun(WF.watchlist),
+  ]);
+  S.recipients = rec.text ? (JSON.parse(rec.text).empfaenger || []) : [];
+  S.recSha = rec.sha;
+  S.watchlist = wl.text && window.jsyaml ? jsyaml.load(wl.text) : null;
+  S.news = news.text ? JSON.parse(news.text) : { items: [], termine: [] };
+  S.docs = (Array.isArray(docs) ? docs : []).filter((f) => f.type === "file" && DOC_TYPES.includes(f.name.split(".").pop().toLowerCase()));
+  S.runs = { digest: r1, watchlist: r2 };
+  renderAll();
+}
+
+// ------------------------------------------------------------ Darstellung
+function renderAll() { renderOverview(); renderNews(); renderRecipients(); renderDocs(); renderFocus(); }
+
+function runLine(label, run, extra) {
+  if (!run) return el("div", { class: "status" }, el("span", { class: "dot" }), el("div", {}, el("div", { class: "t" }, label), el("div", { class: "m" }, "noch kein Lauf")));
+  const running = run.status !== "completed";
+  const ok = run.conclusion === "success";
+  const state = running ? "läuft …" : ok ? "erfolgreich" : `fehlgeschlagen (${run.conclusion})`;
+  return el("div", { class: "status" },
+    running ? el("span", { class: "spinner" }) : el("span", { class: "dot" + (ok ? " on" : "") }),
+    el("div", {}, el("div", { class: "t" }, label, " ", el("span", { class: ok || running ? "badge" : "badge grey" }, state)),
+      el("div", { class: "m" }, ago(run.updated_at || run.created_at), extra ? " · " + extra : "", " · ",
+        el("a", { href: run.html_url, target: "_blank", rel: "noopener" }, "Protokoll"))));
+}
+
+function renderOverview() {
+  const news = S.news || { items: [] };
+  const lastBatch = news.items.filter((i) => i.gefunden === news.aktualisiert);
+  $("kNews").textContent = news.aktualisiert ? lastBatch.length : "–";
+  $("kUnits").textContent = S.watchlist ? (S.watchlist.units || []).length : "–";
+  $("kRecipients").textContent = S.recipients.length;
+  $("kDocs").textContent = S.docs.length;
+
+  const ev = $("ovEvents"); ev.replaceChildren();
+  const today = new Date().toISOString().slice(0, 10);
+  const events = (news.termine || []).filter((e) => (e.ende || e.beginn) >= today);
+  if (!events.length) ev.append(el("div", { class: "empty" }, "Keine Termine im letzten Report."));
+  else ev.append(el("table", { class: "list" }, el("tbody", {}, events.map((e) => el("tr", {},
+    el("td", { style: "width:110px;font-weight:700;white-space:nowrap" }, deRange(e.beginn, e.ende)),
+    el("td", {}, e.url ? el("a", { href: e.url, target: "_blank", rel: "noopener" }, el("b", {}, e.name)) : el("b", {}, e.name),
+      e.art ? el("span", { class: "hint" }, " · " + e.art) : "", e.hinweis ? el("div", { class: "hint" }, e.hinweis) : ""),
+    el("td", { class: "hint", style: "width:120px" }, e.ort || ""))))));
+
+  const st = $("ovStatus"); st.replaceChildren(
+    runLine("Wöchentlicher Report", S.runs.digest, news.aktualisiert ? "letzter Report " + deDate(news.aktualisiert) : ""),
+    runLine("Watchlist aus Dokumenten", S.runs.watchlist));
+}
+
+let newsFilter = "Alle";
+function renderNews() {
+  const items = (S.news?.items || []).filter((i) => newsFilter === "Alle" || i.abschnitt === newsFilter).slice(0, 20);
+  const f = $("newsFilters"); f.replaceChildren(...["Alle", "Units", "Staaten", "Sonstiges"].map((k) =>
+    el("button", { class: "chip", "aria-pressed": String(k === newsFilter), onclick: () => { newsFilter = k; renderNews(); } }, k)));
+  const prios = {};
+  for (const u of S.watchlist?.units || []) prios[u.name.toLowerCase()] = u.prio;
+  const list = $("newsList"); list.replaceChildren();
+  if (!items.length) { list.append(el("div", { class: "empty" }, "Noch keine Meldungen. Sie erscheinen nach dem ersten Report.")); return; }
+  for (const i of items) {
+    const prio = prios[(i.entity || "").toLowerCase()];
+    list.append(el("article", { class: "item" + (i.rivale ? " rival" : "") },
+      el("div", { class: "meta" }, el("b", {}, i.entity || i.abschnitt), prio ? el("span", { class: "badge" }, prio) : "",
+        i.datum ? deDate(i.datum) : "", el("span", {}, "· " + i.abschnitt), i.rivale ? el("span", { class: "badge grey" }, "Lagebeobachtung") : "",
+        i.ungeprueft ? el("span", { class: "badge grey" }, "ungeprüft") : ""),
+      el("h4", {}, el("a", { href: i.url, target: "_blank", rel: "noopener" }, i.titel)),
+      i.zusammenfassung ? el("p", {}, i.zusammenfassung) : "",
+      i.relevanz ? el("p", { class: "rel" }, el("b", {}, "Für den CIHBw: "), i.relevanz) : "",
+      el("div", { class: "src" }, (i.quelle || "Quelle") + " ↗")));
+  }
+}
+
+function renderRecipients() {
+  const body = $("recBody"); body.replaceChildren();
+  if (!S.recipients.length) body.append(el("tr", {}, el("td", { colspan: 3, class: "empty" }, "Noch keine Empfänger.")));
+  S.recipients.forEach((r, idx) => body.append(el("tr", {},
+    el("td", {}, el("b", {}, r.email)), el("td", {}, r.name || el("span", { class: "hint" }, "–")),
+    el("td", { class: "act" }, el("button", { class: "btn ghost small danger", onclick: (e) => removeRecipient(idx, e.currentTarget) }, "Entfernen")))));
+}
+
+function renderDocs() {
+  const body = $("docBody"); body.replaceChildren();
+  if (!S.docs.length) body.append(el("tr", {}, el("td", { colspan: 3, class: "empty" }, "Noch keine Dokumente.")));
+  for (const d of S.docs) body.append(el("tr", {},
+    el("td", {}, el("b", {}, d.name)), el("td", { class: "hint" }, size(d.size)),
+    el("td", { class: "act" }, el("button", { class: "btn ghost small danger", onclick: (e) => removeDoc(d, e.currentTarget) }, "Löschen"))));
+  $("wlStatus").replaceChildren(runLine("Watchlist-Erzeugung", S.runs.watchlist));
+}
+
+function renderFocus() {
+  const wl = S.watchlist;
+  const box = $("focusUnits"); box.replaceChildren();
+  if (!wl) { box.append(el("div", { class: "empty" }, "Watchlist noch nicht geladen.")); return; }
+  const docs = wl.meta?.dokumente?.length ? ` Grundlage: ${wl.meta.dokumente.join(", ")}.` : wl.meta?.quelle ? ` Grundlage: ${wl.meta.quelle} (${wl.meta.stand || ""}).` : "";
+  $("focusLead").textContent = "So hat das System die Dokumente ausgewertet. Danach richtet sich die Recherche." + docs;
+  const groups = [
+    ["Strategisch, aktiv bearbeiten", (p) => /^[AB]{3}$/.test(p)],
+    ["Anlassbezogen", (p) => /C/.test(p)],
+    ["Noch zu bewerten", (p) => !/^[ABC]{3}$/.test(p)],
+  ];
+  const order = (p) => (p || "ZZZ").split("").sort().join("");
+  for (const [title, test] of groups) {
+    const units = (wl.units || []).filter((u) => test(String(u.prio || ""))).sort((a, b) => order(a.prio).localeCompare(order(b.prio)));
+    if (!units.length) continue;
+    box.append(el("div", { class: "prio-group" },
+      el("h3", { class: "h" }, title, el("span", { class: "badge black" }, units.length)),
+      el("table", { class: "list" }, el("thead", {}, el("tr", {}, el("th", {}, "Unit / Programm"), el("th", {}, "Ebene / Land"), el("th", {}, "Priorität"))),
+        el("tbody", {}, units.map((u) => el("tr", {}, el("td", {}, el("b", {}, u.name)), el("td", {}, u.land || u.ebene || ""),
+          el("td", {}, el("span", { class: "badge" }, u.prio || "–"))))))));
+  }
+  $("focusStates").replaceChildren(...(wl.staaten || []).map((s) => el("span", { class: s.rolle === "rivale" ? "rival" : "" }, s.land)));
+  const fe = $("focusEvents"); fe.replaceChildren();
+  const ev = wl.termine || [];
+  if (!ev.length) fe.append(el("div", { class: "empty" }, "Keine festen Termine."));
+  else fe.append(el("table", { class: "list" }, el("tbody", {}, ev.map((e) => el("tr", {},
+    el("td", { style: "width:130px;font-weight:700" }, deRange(e.beginn, e.ende) + " " + String(e.beginn).slice(0, 4)),
+    el("td", {}, e.name), el("td", { class: "hint" }, e.ort || ""))))));
+}
+
+// ------------------------------------------------------------ Aktionen
+async function busy(btn, fn) {
+  const label = btn.textContent; btn.disabled = true; btn.replaceChildren(el("span", { class: "spinner" }), " " + label);
+  try { await fn(); } catch (e) { toast(e.message || String(e), true); } finally { btn.disabled = false; btn.textContent = label; }
+}
+
+async function saveRecipients(list, message) {
+  if (DEMO) { S.recipients = list; renderRecipients(); renderOverview(); toast("Demo: nicht gespeichert"); return; }
+  const body = b64encode(JSON.stringify({ empfaenger: list }, null, 1) + "\n");
+  try { const r = await putFile(PATHS.recipients, body, S.recSha, message); S.recSha = r.content.sha; }
+  catch (e) {
+    if (e.status !== 409 && e.status !== 422) throw e;           // jemand anderes hat gleichzeitig geändert
+    const fresh = await getFile(PATHS.recipients); S.recSha = fresh.sha;
+    const r = await putFile(PATHS.recipients, body, S.recSha, message); S.recSha = r.content.sha;
+  }
+  S.recipients = list; renderRecipients(); renderOverview();
+}
+
+$("recForm").addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const email = $("recMail").value.trim().toLowerCase(), name = $("recName").value.trim();
+  $("recErr").textContent = "";
+  if (!EMAIL_RE.test(email)) { $("recErr").textContent = "Bitte eine gültige E-Mail-Adresse eingeben."; return; }
+  if (S.recipients.some((r) => r.email.toLowerCase() === email)) { $("recErr").textContent = "Diese Adresse steht schon in der Liste."; return; }
+  busy(ev.submitter, async () => {
+    await saveRecipients([...S.recipients, { email, name }], `Empfänger hinzugefügt: ${email}`);
+    $("recMail").value = ""; $("recName").value = ""; toast(`${email} erhält ab dem nächsten Report die E-Mail.`);
+  });
+});
+
+function confirmTwice(btn, text) {
+  if (btn.dataset.armed) return true;
+  btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = text;
+  setTimeout(() => { delete btn.dataset.armed; btn.textContent = old; }, 3500);
+  return false;
+}
+function removeRecipient(idx, btn) {
+  if (!confirmTwice(btn, "Wirklich entfernen?")) return;
+  const r = S.recipients[idx];
+  busy(btn, async () => { await saveRecipients(S.recipients.filter((_, i) => i !== idx), `Empfänger entfernt: ${r.email}`); toast(`${r.email} entfernt.`); });
+}
+
+async function uploadFile(file) {
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (!DOC_TYPES.includes(ext)) { toast("Nur PDF, DOCX, MD oder TXT.", true); return; }
+  if (file.size > 25e6) { toast("Die Datei ist größer als 25 MB.", true); return; }
+  const name = file.name.replace(/[^\w.\-äöüÄÖÜß ]+/g, "_").replace(/\s+/g, "_");
+  if (DEMO) { S.docs.push({ name, size: file.size, sha: "demo" }); renderDocs(); renderOverview(); toast("Demo: nicht gespeichert"); return; }
+  const existing = S.docs.find((d) => d.name === name);
+  const drop = $("drop"); drop.querySelector(".big").replaceChildren(el("span", { class: "spinner" }), " Lädt hoch …");
+  try {
+    const b64 = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(",")[1]); fr.onerror = rej; fr.readAsDataURL(file); });
+    await putFile(`${PATHS.docs}/${name}`, b64, existing?.sha, `Dokument ${existing ? "ersetzt" : "hinzugefügt"}: ${name}`);
+    toast(`${name} hochgeladen. Die Watchlist wird jetzt neu erzeugt.`);
+    await refreshDocsAndWatchlist();
+  } catch (e) { toast(e.message, true); }
+  finally { drop.querySelector(".big").textContent = "Dokument hochladen"; }
+}
+
+function removeDoc(d, btn) {
+  if (!confirmTwice(btn, "Wirklich löschen?")) return;
+  if (S.docs.length === 1 && !DEMO) { toast("Das letzte Dokument kann nicht gelöscht werden. Erst eine neue Fassung hochladen.", true); return; }
+  busy(btn, async () => {
+    if (DEMO) { S.docs = S.docs.filter((x) => x !== d); renderDocs(); renderOverview(); toast("Demo: nicht gespeichert"); return; }
+    await deleteFile(`${PATHS.docs}/${d.name}`, d.sha, `Dokument gelöscht: ${d.name}`);
+    toast(`${d.name} gelöscht. Die Watchlist wird neu erzeugt.`);
+    await refreshDocsAndWatchlist();
+  });
+}
+
+let pollTimer;
+async function refreshDocsAndWatchlist() {
+  const docs = await gh(`/contents/${PATHS.docs}?ref=${S.branch}`).catch(() => []);
+  S.docs = docs.filter((f) => f.type === "file" && DOC_TYPES.includes(f.name.split(".").pop().toLowerCase()));
+  renderDocs(); renderOverview();
+  clearInterval(pollTimer);
+  let rounds = 0, sawRunning = false;
+  pollTimer = setInterval(async () => {
+    rounds++;
+    S.runs.watchlist = await lastRun(WF.watchlist);
+    const running = S.runs.watchlist && S.runs.watchlist.status !== "completed";
+    sawRunning ||= running;
+    renderDocs(); renderOverview();
+    if ((sawRunning && !running) || rounds > 40) {
+      clearInterval(pollTimer);
+      const wl = await getFile(PATHS.watchlist);
+      if (wl.text && window.jsyaml) { S.watchlist = jsyaml.load(wl.text); renderFocus(); renderOverview(); }
+      if (sawRunning) toast(S.runs.watchlist?.conclusion === "success" ? "Watchlist aktualisiert." : "Watchlist-Erzeugung fehlgeschlagen. Siehe Protokoll.", S.runs.watchlist?.conclusion !== "success");
+    }
+  }, 8000);
+}
+
+const drop = $("drop");
+drop.addEventListener("click", (e) => { if (e.target !== $("fileInput")) $("fileInput").click(); });
+drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("fileInput").click(); } });
+$("fileInput").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) uploadFile(f); e.target.value = ""; });
+["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => { const f = e.dataTransfer.files[0]; if (f) uploadFile(f); });
+
+function startDigest(dry, btn) {
+  if (!dry && !confirmTwice(btn, `An ${S.recipients.length} Empfänger senden?`)) return;
+  busy(btn, async () => {
+    if (DEMO) { toast("Demo: kein Lauf gestartet"); return; }
+    await dispatch(WF.digest, { dry_run: String(dry) });
+    toast(dry ? "Testlauf gestartet. Ergebnis in ca. 10 Minuten im Protokoll." : "Report wird erstellt und in ca. 10 Minuten versendet.");
+    setTimeout(async () => { S.runs.digest = await lastRun(WF.digest); renderOverview(); }, 6000);
+  });
+}
+$("btnSend").addEventListener("click", (e) => startDigest(false, e.currentTarget));
+$("btnTest").addEventListener("click", (e) => startDigest(true, e.currentTarget));
+
+// ------------------------------------------------------------ Tabs & Verbindung
+const VIEWS = ["overview", "news", "recipients", "docs", "focus", "settings"];
+function show(view) {
+  if (!VIEWS.includes(view)) view = "overview";
+  document.querySelectorAll("nav.tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === view)));
+  document.querySelectorAll("section.view").forEach((s) => s.classList.toggle("active", s.id === "view-" + view));
+  history.replaceState(null, "", (DEMO ? "?demo=1" : location.pathname) + "#" + view);
+}
+document.querySelectorAll("nav.tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.view)));
+
+function storage() { try { return localStorage.getItem("dia.remember") ? localStorage : sessionStorage; } catch { return null; } }
+function setConnected(ok) {
+  $("connDot").classList.toggle("on", ok);
+  $("connText").textContent = ok ? "verbunden" : "nicht verbunden";
+  ["btnSend", "btnTest"].forEach((id) => ($(id).disabled = !ok));
+}
+
+$("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("loginErr").textContent = "";
+  S.repo = $("inRepo").value.trim().replace(/^https?:\/\/github\.com\//, "").replace(/\/$/, "");
+  S.token = $("inToken").value.trim();
+  try {
+    await loadAll();
+    try {
+      localStorage.removeItem("dia.remember"); sessionStorage.removeItem("dia.auth"); localStorage.removeItem("dia.auth");
+      if ($("inRemember").checked) localStorage.setItem("dia.remember", "1");
+      storage()?.setItem("dia.auth", JSON.stringify({ repo: S.repo, token: S.token }));
+    } catch {}
+    setConnected(true); toast("Verbunden."); show("overview");
+  } catch (err) {
+    setConnected(false);
+    $("loginErr").textContent = err.status === 401 ? "Der Schlüssel ist ungültig oder abgelaufen." :
+      err.status === 404 ? "Repository nicht gefunden oder der Schlüssel hat keinen Zugriff darauf." : err.message;
+  }
+});
+$("btnLogout").addEventListener("click", () => {
+  try { localStorage.removeItem("dia.auth"); sessionStorage.removeItem("dia.auth"); localStorage.removeItem("dia.remember"); } catch {}
+  S.token = ""; $("inToken").value = ""; setConnected(false); toast("Verbindung getrennt.");
+});
+
+async function init() {
+  if (DEMO) { $("demoBar").hidden = false; await loadAll(); setConnected(true); show((location.hash || "#overview").slice(1)); return; }
+  // Repository-Vorschlag aus der GitHub-Pages-Adresse ableiten
+  const m = location.hostname.match(/^([\w-]+)\.github\.io$/);
+  if (m) $("inRepo").value = `${m[1]}/${location.pathname.split("/").filter(Boolean)[0] || ""}`;
+  let saved = null; try { saved = JSON.parse(storage()?.getItem("dia.auth") || "null"); } catch {}
+  if (!saved) { setConnected(false); show("settings"); return; }
+  Object.assign(S, saved); $("inRepo").value = S.repo;
+  try { await loadAll(); setConnected(true); show((location.hash || "#overview").slice(1)); }
+  catch (e) { setConnected(false); show("settings"); $("loginErr").textContent = "Gespeicherte Verbindung ungültig: " + e.message; }
+}
+
+// ------------------------------------------------------------ Demo-Daten
+function demoData() {
+  const iso = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+  const mk = (entity, abschnitt, titel, n, extra = {}) => ({ entity, abschnitt, titel, datum: iso(-n), gefunden: iso(0),
+    zusammenfassung: "Beispieltext: Hier steht in zwei bis drei Sätzen, was die Organisation veröffentlicht oder angekündigt hat.",
+    relevanz: "Beispieltext zur Einordnung für den CIHBw.", url: "https://example.org", quelle: "example.org", ...extra });
+  return {
+    repo: "demo/defense-innovation-alert",
+    recipients: [{ email: "s.beispiel@bundeswehr.org", name: "Beispiel, Team I+E" }, { email: "d.muster@bundeswehr.org", name: "Muster, Teamleitung" }],
+    docs: [{ name: "Internationales_Partnermanagement_CIHBw.pdf", size: 966638, sha: "demo" }],
+    runs: {
+      digest: { status: "completed", conclusion: "success", updated_at: iso(-0.2), html_url: "#" },
+      watchlist: { status: "completed", conclusion: "success", updated_at: iso(-3), html_url: "#" },
+    },
+    news: {
+      aktualisiert: iso(0),
+      termine: [
+        { name: "Beispieltermin: Bewerbungsfrist Accelerator", art: "Frist", beginn: iso(11), ende: "", ort: "online", hinweis: "Beispielhinweis zur Relevanz." },
+        { name: "Beispieltermin: Demo Day", art: "Event", beginn: iso(17), ende: iso(18), ort: "Brüssel" },
+        { name: "Beispieltermin: Experimentierübung", art: "Übung", beginn: iso(50), ende: iso(53), ort: "Tallinn" },
+      ],
+      items: [
+        mk("NATO DIANA", "Units", "Beispielmeldung: Neuer Challenge Call", 1),
+        mk("AFWERX", "Units", "Beispielmeldung: Neue Ausschreibung", 2),
+        mk("Brave1", "Units", "Beispielmeldung: Neue Grant-Runde", 3),
+        mk("Finnland", "Staaten", "Beispielmeldung: Neues Innovationsbudget", 2),
+        mk("China", "Staaten", "Beispielmeldung zur Lagebeobachtung", 4, { rivale: true }),
+        mk("VC", "Sonstiges", "Beispielmeldung: First Close eines Defence-Fonds", 3),
+      ],
+    },
+    watchlist: {
+      meta: { dokumente: ["Internationales_Partnermanagement_CIHBw.pdf"] },
+      units: [
+        ["NATO DIANA", "NATO", "AAA"], ["NATO Innovation Fund (NIF)", "NATO", "AAA"], ["EUDIS", "EU", "AAA"], ["AFWERX", "USA", "AAA"],
+        ["MIND (Niederlande)", "Niederlande", "AAA"], ["Defense Innovation Unit (DIU)", "USA", "AAB"], ["Brave1", "Ukraine", "AAB"],
+        ["Swiss Innovation Forces", "Schweiz", "AAB"], ["MAFAT / DDR&D", "Israel", "ABB"], ["Green Lane", "Israel", "BBB"],
+        ["Europäischer Verteidigungsfonds (EDF)", "EU", "ABC"], ["ATLA / DISTI (Japan)", "Japan", "BBC"], ["AF CyberWorx", "USA", "zu bewerten"],
+      ].map(([name, land, prio]) => ({ name, land, prio })),
+      staaten: ["USA", "Vereinigtes Königreich", "Frankreich", "Niederlande", "Finnland", "Ukraine", "Israel", "Singapur"].map((land) => ({ land, rolle: "partner" }))
+        .concat(["Russland", "China"].map((land) => ({ land, rolle: "rivale" }))),
+      termine: [{ name: "DSEI Germany", beginn: "2027-03-09", ende: "2027-03-12", ort: "Hannover" }],
+    },
+  };
+}
+
+window.addEventListener("DOMContentLoaded", init);  // nach js-yaml (defer)
+</script>
+</body>
+</html>
